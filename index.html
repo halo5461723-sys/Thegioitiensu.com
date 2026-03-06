@@ -1,50 +1,87 @@
-function selectRace(race) {
-    SOMALIA_V14_DATA_player.race = race;
-    
-    // Áp dụng chỉ số cơ bản
-    switch(race) {
-        case 'Cận chiến':
-            SOMALIA_V14_DATA_player.hp *= 1.15;
-            SOMALIA_V14_DATA_player.baseDame *= 1.15;
-            SOMALIA_V14_DATA_player.dmgReduction = 0;
-            break;
-        case 'Phép thuật':
-            SOMALIA_V14_DATA_player.baseDame *= 1.40;
-            SOMALIA_V14_DATA_player.hp *= 0.70;
-            SOMALIA_V14_DATA_player.dmgReduction = 0;
-            break;
-        case 'Cyborg':
-            SOMALIA_V14_DATA_player.baseDame *= 1.35;
-            SOMALIA_V14_DATA_player.hp *= 0.80;
-            SOMALIA_V14_DATA_player.dmgReduction = 0;
-            break;
-        case 'Angel':
-            SOMALIA_V14_DATA_player.hp *= 1.80;
-            SOMALIA_V14_DATA_player.baseDame *= 0.50;
-            SOMALIA_V14_DATA_player.dmgReduction = 0.05; // 5%
-            break;
-        case 'Devil':
-            SOMALIA_V14_DATA_player.baseDame *= 1.70;
-            SOMALIA_V14_DATA_player.hp *= 0.65;
-            SOMALIA_V14_DATA_player.dmgReduction = 0.10; // 10%
-            break;
-    }
-    
-    document.getElementById('race-screen').classList.add('hidden');
-    document.getElementById('game-screen').classList.remove('hidden');
-    updateUI();
-}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>RPG Web Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #222; color: #fff; padding: 20px; }
+        .hidden { display: none; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-// Hàm tính toán sát thương nhận vào khi đánh quái
-function fight() {
-    let rawReflect = SOMALIA_V14_DATA_player.baseDame * 0.4;
-    // Áp dụng giảm sát thương
-    let actualReflect = rawReflect * (1 - SOMALIA_V14_DATA_player.dmgReduction);
-    
-    SOMALIA_V14_DATA_player.hp -= actualReflect;
-    SOMALIA_V14_DATA_player.exp += 20;
-    
-    document.getElementById('log').innerHTML = `Bạn bị phản ${actualReflect.toFixed(1)} dame (Đã giảm trừ nhờ tộc ${SOMALIA_V14_DATA_player.race})`;
-    updateUI();
-}
+    <div id="login-screen">
+        <h2>Đăng nhập</h2>
+        <input id="username" placeholder="Tên nhân vật">
+        <button onclick="saveUser()">Bắt đầu</button>
+    </div>
 
+    <div id="race-screen" class="hidden">
+        <h2>Chọn Tộc</h2>
+        <button onclick="selectRace('Cận chiến')">Cận chiến (+15% HP/Dame)</button>
+        <button onclick="selectRace('Phép thuật')">Phép thuật (+40% Dame/-30% HP)</button>
+        <button onclick="selectRace('Cyborg')">Cyborg (+35% Dame/-20% HP)</button>
+        <button onclick="selectRace('Angel')">Angel (+80% HP/-50% Dame/Giảm 5% Dame nhận)</button>
+        <button onclick="selectRace('Devil')">Devil (+70% Dame/-35% HP/Giảm 10% Dame nhận)</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <h3 id="player-stats"></h3>
+        <button onclick="fight()">Đánh quái</button>
+        <div id="log" style="margin-top:20px; font-style: italic;"></div>
+    </div>
+
+    <script>
+        let SOMALIA_V14_DATA_player = {
+            name: "", race: "", hp: 100, baseDame: 20, level: 1, exp: 0, dmgReduction: 0
+        };
+
+        function saveUser() {
+            SOMALIA_V14_DATA_player.name = document.getElementById('username').value;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('race-screen').classList.remove('hidden');
+        }
+
+        function selectRace(race) {
+            SOMALIA_V14_DATA_player.race = race;
+            switch(race) {
+                case 'Cận chiến':
+                    SOMALIA_V14_DATA_player.hp *= 1.15; SOMALIA_V14_DATA_player.baseDame *= 1.15;
+                    break;
+                case 'Phép thuật':
+                    SOMALIA_V14_DATA_player.baseDame *= 1.40; SOMALIA_V14_DATA_player.hp *= 0.70;
+                    break;
+                case 'Cyborg':
+                    SOMALIA_V14_DATA_player.baseDame *= 1.35; SOMALIA_V14_DATA_player.hp *= 0.80;
+                    break;
+                case 'Angel':
+                    SOMALIA_V14_DATA_player.hp *= 1.80; SOMALIA_V14_DATA_player.baseDame *= 0.50;
+                    SOMALIA_V14_DATA_player.dmgReduction = 0.05;
+                    break;
+                case 'Devil':
+                    SOMALIA_V14_DATA_player.baseDame *= 1.70; SOMALIA_V14_DATA_player.hp *= 0.65;
+                    SOMALIA_V14_DATA_player.dmgReduction = 0.10;
+                    break;
+            }
+            document.getElementById('race-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            updateUI();
+        }
+
+        function fight() {
+            let rawReflect = SOMALIA_V14_DATA_player.baseDame * 0.4;
+            let actualReflect = rawReflect * (1 - SOMALIA_V14_DATA_player.dmgReduction);
+            SOMALIA_V14_DATA_player.hp -= actualReflect;
+            SOMALIA_V14_DATA_player.exp += 20;
+            document.getElementById('log').innerHTML = `Bạn đã đánh quái và bị phản ${actualReflect.toFixed(1)} sát thương!`;
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('player-stats').innerText = 
+                `Tên: ${SOMALIA_V14_DATA_player.name} | Tộc: ${SOMALIA_V14_DATA_player.race} | Máu: ${SOMALIA_V14_DATA_player.hp.toFixed(1)} | EXP: ${SOMALIA_V14_DATA_player.exp}`;
+        }
+    </script>
+</body>
+</html>
