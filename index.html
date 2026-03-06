@@ -1,0 +1,50 @@
+function selectRace(race) {
+    SOMALIA_V14_DATA_player.race = race;
+    
+    // Áp dụng chỉ số cơ bản
+    switch(race) {
+        case 'Cận chiến':
+            SOMALIA_V14_DATA_player.hp *= 1.15;
+            SOMALIA_V14_DATA_player.baseDame *= 1.15;
+            SOMALIA_V14_DATA_player.dmgReduction = 0;
+            break;
+        case 'Phép thuật':
+            SOMALIA_V14_DATA_player.baseDame *= 1.40;
+            SOMALIA_V14_DATA_player.hp *= 0.70;
+            SOMALIA_V14_DATA_player.dmgReduction = 0;
+            break;
+        case 'Cyborg':
+            SOMALIA_V14_DATA_player.baseDame *= 1.35;
+            SOMALIA_V14_DATA_player.hp *= 0.80;
+            SOMALIA_V14_DATA_player.dmgReduction = 0;
+            break;
+        case 'Angel':
+            SOMALIA_V14_DATA_player.hp *= 1.80;
+            SOMALIA_V14_DATA_player.baseDame *= 0.50;
+            SOMALIA_V14_DATA_player.dmgReduction = 0.05; // 5%
+            break;
+        case 'Devil':
+            SOMALIA_V14_DATA_player.baseDame *= 1.70;
+            SOMALIA_V14_DATA_player.hp *= 0.65;
+            SOMALIA_V14_DATA_player.dmgReduction = 0.10; // 10%
+            break;
+    }
+    
+    document.getElementById('race-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    updateUI();
+}
+
+// Hàm tính toán sát thương nhận vào khi đánh quái
+function fight() {
+    let rawReflect = SOMALIA_V14_DATA_player.baseDame * 0.4;
+    // Áp dụng giảm sát thương
+    let actualReflect = rawReflect * (1 - SOMALIA_V14_DATA_player.dmgReduction);
+    
+    SOMALIA_V14_DATA_player.hp -= actualReflect;
+    SOMALIA_V14_DATA_player.exp += 20;
+    
+    document.getElementById('log').innerHTML = `Bạn bị phản ${actualReflect.toFixed(1)} dame (Đã giảm trừ nhờ tộc ${SOMALIA_V14_DATA_player.race})`;
+    updateUI();
+}
+
